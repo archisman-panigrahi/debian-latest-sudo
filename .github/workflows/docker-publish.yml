@@ -41,6 +41,10 @@ jobs:
         if: github.event_name != 'pull_request'
         uses: sigstore/cosign-installer@v4.0.0
 
+      # Set up QEMU to be able to build multi-platform Docker images
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
       # Set up BuildKit Docker container builder to be able to build
       # multi-platform images and export cache
       # https://github.com/docker/setup-buildx-action
@@ -72,6 +76,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
+          platforms: linux/amd64,linux/arm64
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
